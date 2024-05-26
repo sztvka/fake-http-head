@@ -36,16 +36,8 @@
 # from the standard ports/downloads and therefore removed from this list.
 #
 PLATFORMS="darwin/amd64" # amd64 only as of go1.5
-PLATFORMS="$PLATFORMS windows/amd64 windows/386" # arm compilation not available for Windows
-PLATFORMS="$PLATFORMS linux/amd64 linux/386"
-PLATFORMS="$PLATFORMS linux/ppc64 linux/ppc64le"
-PLATFORMS="$PLATFORMS linux/mips64 linux/mips64le" # experimental in go1.6
-PLATFORMS="$PLATFORMS freebsd/amd64"
-PLATFORMS="$PLATFORMS netbsd/amd64" # amd64 only as of go1.6
-PLATFORMS="$PLATFORMS openbsd/amd64" # amd64 only as of go1.6
-PLATFORMS="$PLATFORMS dragonfly/amd64" # amd64 only as of go1.5
-PLATFORMS="$PLATFORMS plan9/amd64 plan9/386" # as of go1.4
-PLATFORMS="$PLATFORMS solaris/amd64" # as of go1.3
+PLATFORMS="$PLATFORMS windows/amd64" # arm compilation not available for Windows
+PLATFORMS="$PLATFORMS linux/amd64"
 
 # ARMBUILDS lists the platforms that are currently supported.  From this list
 # we generate the following architectures:
@@ -61,7 +53,7 @@ PLATFORMS="$PLATFORMS solaris/amd64" # as of go1.3
 #   @dfc: that target expects that you're bulding for a mobile phone
 #   @dfc: iphone 5 and below, ARMv7, iphone 3 and below ARMv6, iphone 5s and above arm64
 # 
-PLATFORMS_ARM="linux freebsd netbsd"
+PLATFORMS_ARM="linux darwin"
 
 ##############################################################
 # Shouldn't really need to modify anything below this line.  #
@@ -90,15 +82,20 @@ if [[ $PLATFORMS_ARM == *"linux"* ]]; then
   echo "${CMD}"
   eval $CMD || FAILURES="${FAILURES} ${PLATFORM}"
 fi
+if [[ $PLATFORMS_ARM == *"darwin"* ]]; then
+  CMD="GOOS=darwin GOARCH=arm64 go build -o ${OUTPUT}-darwin-arm64 $@"
+  echo "${CMD}"
+  eval $CMD || FAILURES="${FAILURES} ${PLATFORM}"
+fi
 for GOOS in $PLATFORMS_ARM; do
   GOARCH="arm"
   # build for each ARM version
-  for GOARM in 7 6 5; do
-    BIN_FILENAME="${OUTPUT}-${GOOS}-${GOARCH}${GOARM}"
-    CMD="GOARM=${GOARM} GOOS=${GOOS} GOARCH=${GOARCH} go build -o ${BIN_FILENAME} $@"
-    echo "${CMD}"
-    eval "${CMD}" || FAILURES="${FAILURES} ${GOOS}/${GOARCH}${GOARM}" 
-  done
+#  for GOARM in 7 6 5; do
+#    BIN_FILENAME="${OUTPUT}-${GOOS}-${GOARCH}${GOARM}"
+#    CMD="GOARM=${GOARM} GOOS=${GOOS} GOARCH=${GOARCH} go build -o ${BIN_FILENAME} $@"
+#    echo "${CMD}"
+#    eval "${CMD}" || FAILURES="${FAILURES} ${GOOS}/${GOARCH}${GOARM}"
+#  done
 done
 
 # eval errors
