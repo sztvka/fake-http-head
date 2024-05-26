@@ -54,3 +54,4 @@ Download the latest release from the releases page or compile from scratch, then
 
 ## TODO
 - Add wrappers for nodejs and python.
+- Build a .so file for linking in other languages.
